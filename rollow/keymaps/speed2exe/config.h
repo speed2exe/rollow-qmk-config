@@ -54,5 +54,3 @@
 #define PERMISSIVE_HOLD
 #define IGNORE_MOD_TAP_INTERRUPT
 #define TAPPING_FORCE_HOLD
-
-// TODO: add LED stuff??
