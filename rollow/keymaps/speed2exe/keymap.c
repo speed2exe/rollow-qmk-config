@@ -181,24 +181,24 @@ void set_pos_log(keyrecord_t *record) {
 char key_log[16] = {};
 void set_key_log(uint16_t keycode) {
     const char* keyname = get_keyname(keycode);
-    snprintf(key_log, sizeof(key_log), "KEY   %s", keyname);
+    snprintf(key_log, sizeof(key_log), "KEY\n %s", keyname);
 }
 
-// char mod_log[32] = {};
-// #define MODS_SHIFT_MASK  (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT))
-// #define MODS_CTRL_MASK   (MOD_BIT(KC_LCTL)   | MOD_BIT(KC_RCTRL))
-// #define MODS_ALT_MASK    (MOD_BIT(KC_LALT)   | MOD_BIT(KC_RALT))
-// #define MODS_GUI_MASK    (MOD_BIT(KC_LGUI)   | MOD_BIT(KC_RGUI))
-// void set_mod_log() {
-//     uint8_t mods = get_mods();
-//     snprintf(mod_log, sizeof(mod_log),
-//             "MOD\n%s%s",
-//             ((mods & MODS_SHIFT_MASK) ? " SHFT" : "\n"),
-//             ((mods & MODS_CTRL_MASK) ? " CTRL" : "\n")
-//             // ((mods & MODS_ALT_MASK) ? "  ALT" : "\n"),
-//             // ((mods & MODS_GUI_MASK) ? " GUI" : "")
-//     );
-// }
+char mod_log[32] = {};
+#define MODS_SHIFT_MASK  (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT))
+#define MODS_CTRL_MASK   (MOD_BIT(KC_LCTL)   | MOD_BIT(KC_RCTRL))
+#define MODS_ALT_MASK    (MOD_BIT(KC_LALT)   | MOD_BIT(KC_RALT))
+#define MODS_GUI_MASK    (MOD_BIT(KC_LGUI)   | MOD_BIT(KC_RGUI))
+void set_mod_log(void) {
+    uint8_t mods = get_mods();
+    snprintf(mod_log, sizeof(mod_log),
+            "MOD\n%s%s%s%s",
+            ((mods & MODS_SHIFT_MASK) ? " SHFT" : "\n"),
+            ((mods & MODS_CTRL_MASK) ? " CTRL" : "\n"),
+            ((mods & MODS_ALT_MASK) ? "  ALT" : "\n"),
+            ((mods & MODS_GUI_MASK) ? "  GUI" : "\n")
+    );
+}
 
 void oled_write_layer(void) {
     oled_write_P(PSTR("LAYER"), false);
@@ -245,7 +245,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
         set_pos_log(record);
         // set_key_log(keycode);
-        // set_mod_log();
+        set_mod_log();
     }
   return true;
 }
@@ -256,7 +256,7 @@ bool oled_task_user(void) {
         oled_write_caps();
         oled_write(pos_log, false);
         // oled_write(key_log, false);
-        // oled_write(mod_log, false);
+        oled_write(mod_log, false);
     } else {
         render_logo();
     }
