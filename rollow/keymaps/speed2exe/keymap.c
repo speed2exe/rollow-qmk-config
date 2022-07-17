@@ -200,15 +200,6 @@ void set_key_log(uint16_t keycode) {
 //     );
 // }
 
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (record->event.pressed) {
-        set_pos_log(record);
-        //set_key_log(keycode);
-        //set_mod_log();
-    }
-  return true;
-}
-
 void oled_write_layer(void) {
     oled_write_P(PSTR("LAYER"), false);
     // Print current layer
@@ -248,6 +239,15 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
         return OLED_ROTATION_270;
     }
     return rotation;
+}
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (record->event.pressed) {
+        set_pos_log(record);
+        // set_key_log(keycode);
+        // set_mod_log();
+    }
+  return true;
 }
 
 bool oled_task_user(void) {
