@@ -1,4 +1,6 @@
 #include QMK_KEYBOARD_H
+#include <stdio.h>
+#include "keylogger.c"
 
 enum rollow_layers {
     _BASE,
@@ -157,7 +159,6 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
 };
 #endif
 
-// default oled stuff by rollow creator
 #ifdef OLED_ENABLE
 
 static void render_logo(void) {
@@ -169,32 +170,77 @@ static void render_logo(void) {
     oled_write_P(qmk_logo, false);
 }
 
-static void print_status_narrow(void) {
+char pos_log[32] = {};
+void set_pos_log(keyrecord_t *record) {
+    snprintf(pos_log, sizeof(pos_log),
+            "ROW      %dCOL      %d",
+            record->event.key.row,
+            record->event.key.col);
+}
+
+char key_log[16] = {};
+void set_key_log(uint16_t keycode) {
+    const char* keyname = get_keyname(keycode);
+    snprintf(key_log, sizeof(key_log), "KEY   %s", keyname);
+}
+
+// char mod_log[32] = {};
+// #define MODS_SHIFT_MASK  (MOD_BIT(KC_LSHIFT) | MOD_BIT(KC_RSHIFT))
+// #define MODS_CTRL_MASK   (MOD_BIT(KC_LCTL)   | MOD_BIT(KC_RCTRL))
+// #define MODS_ALT_MASK    (MOD_BIT(KC_LALT)   | MOD_BIT(KC_RALT))
+// #define MODS_GUI_MASK    (MOD_BIT(KC_LGUI)   | MOD_BIT(KC_RGUI))
+// void set_mod_log() {
+//     uint8_t mods = get_mods();
+//     snprintf(mod_log, sizeof(mod_log),
+//             "MOD\n%s%s",
+//             ((mods & MODS_SHIFT_MASK) ? " SHFT" : "\n"),
+//             ((mods & MODS_CTRL_MASK) ? " CTRL" : "\n")
+//             // ((mods & MODS_ALT_MASK) ? "  ALT" : "\n"),
+//             // ((mods & MODS_GUI_MASK) ? " GUI" : "")
+//     );
+// }
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    if (record->event.pressed) {
+        set_pos_log(record);
+        //set_key_log(keycode);
+        //set_mod_log();
+    }
+  return true;
+}
+
+void oled_write_layer(void) {
+    oled_write_P(PSTR("LAYER"), false);
     // Print current layer
-    oled_write_ln_P(PSTR("LAYER"), false);
     switch (get_highest_layer(layer_state)) {
         case _BASE:
-            oled_write_ln_P(PSTR("Base"), false);
+            oled_write_P(PSTR(" BASE"), false);
             break;
         case _NUM:
-            oled_write_ln_P(PSTR(" Num"), false);
+            oled_write_P(PSTR("  NUM"), false);
             break;
         case _SYM:
-            oled_write_ln_P(PSTR(" Sym"), false);
+            oled_write_P(PSTR("  SYM"), false);
             break;
         case _NAV:
-            oled_write_ln_P(PSTR(" Nav"), false);
+            oled_write_P(PSTR("  NAV"), false);
             break;
         case _FN:
-            oled_write_ln_P(PSTR(" Fn"), false);
+            oled_write_P(PSTR("   FN"), false);
             break;
         default:
-            oled_write_ln_P(PSTR(" ?"), false);
+            oled_write_P(PSTR("    ?"), false);
     }
+}
 
-    oled_write_ln_P(PSTR("\n"), false);
+void oled_write_caps(void) {
     led_t led_usb_state = host_keyboard_led_state();
-    oled_write_ln_P(PSTR("CAPS"), led_usb_state.caps_lock);
+    oled_write_ln_P(PSTR("CAPS"), false);
+    if (led_usb_state.caps_lock) {
+        oled_write_P(PSTR("   ON"), led_usb_state.caps_lock);
+    } else {
+        oled_write_P(PSTR("  OFF"), led_usb_state.caps_lock);
+    }
 }
 
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
@@ -206,7 +252,11 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 
 bool oled_task_user(void) {
     if (is_keyboard_master()) {
-        print_status_narrow();
+        oled_write_layer();
+        oled_write_caps();
+        oled_write(pos_log, false);
+        // oled_write(key_log, false);
+        // oled_write(mod_log, false);
     } else {
         render_logo();
     }
