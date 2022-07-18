@@ -54,3 +54,6 @@
 #define PERMISSIVE_HOLD
 #define IGNORE_MOD_TAP_INTERRUPT
 #define TAPPING_FORCE_HOLD
+
+// reduce code size
+#define NO_ACTION_ONESHOT

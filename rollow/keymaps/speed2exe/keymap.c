@@ -135,17 +135,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
     [_BASE] = {
         // left encoder thumb motion, -> <-
-        ENCODER_CCW_CW(_______, KC_TAB),
+        ENCODER_CCW_CW(RSFT(KC_TAB), KC_TAB),
 
         // right encoder thumb motion, -> <-
-        ENCODER_CCW_CW(KC_BSPC, _______),
+        ENCODER_CCW_CW(KC_BSPC, KC_SPC),
     },
     [_NUM] = {
         ENCODER_CCW_CW(_______, _______),
-        ENCODER_CCW_CW(KC_RGHT, _______)
+        ENCODER_CCW_CW(KC_RGHT, KC_LEFT),
     },
     [_SYM] = {
-        ENCODER_CCW_CW(_______, KC_LEFT),
+        ENCODER_CCW_CW(KC_UP, KC_DOWN),
         ENCODER_CCW_CW(_______, _______),
     },
     [_NAV] = {
