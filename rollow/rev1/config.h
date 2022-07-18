@@ -29,7 +29,7 @@
 #define ENCODERS_PAD_B_RIGHT { B6 }
 #define ENCODER_RESOLUTION 2
 
-// #define TAP_CODE_DELAY 10
+#define TAP_CODE_DELAY 10
 
 /* communication between sides */
 #define USE_SERIAL
